@@ -1,0 +1,153 @@
+--公众号
+1.了解微信公众号的相关知识及申请公众号
+2.把公众号的知识给大家培训(下周6-2016-02-27)
+3.配置公众号:需要依赖后台网站及api
+4.微信公众号的通知
+
+--git
+1.学习git及github
+2.git 培训:周军
+3.在github上创建pingCar project:Harry-严汉中
+
+--需求细化:UI
+    说明:1.采用SPA,单页面应用
+         2.前端框架可以考虑用vuejs或者不用任何框架
+1.讨论原型
+2.画出UI原型图:周军
+3.编写UI Demo :Harry 或者 前端工程师
+4.前端开发:html5&&css3&&js:Harry or other
+
+
+--Server
+1.服务器技术选型
+    1.1 初期:koa+fs
+    1.2 中期:koa+koa的相关plugin(缓存\过滤\日志等)
+2.功能细化
+    TODO: 
+        1.找车
+        2.找人
+        3.带手机号的用户体系
+3.api定义
+    TODO:
+    1.POST /zhaoche/{userId}
+    req body:{
+        startPoint:''
+        destination:''
+        time:''
+    }
+    
+    res result://success ,http code:200
+    {
+        data : [{
+                    userId : 111,//车主id
+                    nickname : '',
+                    mobileNo : 139xxxx1234 ,
+                    startPoint:'',
+                    destination:'',
+                    time : '2016-02-24 21:00',//出发时间
+                    carInfo : {//车主的车子信息
+                        id : 111,//carId in our system
+                        brand:'',
+                        verticallicense:'',//隐藏中间3位
+                        color:'',
+                        totalSeatNum:3,
+                        remainderSeatNum:1,
+                        status : 1 //1:等待中 2：满员了 3：异常了（车主取消了或
+                            者其他意外情况）
+                    }
+               }]
+    }  
+
+    2.POST /zhaoren/{userId}
+    req body:{
+        startPoint : '',//见hotSpot表
+        destination : '',
+        time : '21:15',//出发时间，精确到分
+        sex : 1 ,//0 : 不限 1:女 2:男
+        remainderSeatNum : 3 
+    }
+
+    res result : //success , http code : 200 
+    {
+        data : [
+            {
+                userId : 111,
+                nickname : ''
+                startpoint : '',
+                destination : '',
+                time : '',
+                mobileNo : 138xxxx1234
+            }
+        ]
+    }
+
+    3.GET /zhaoche/{userId} or /zhaoren/{userId}
+      response : index.html //返回我们的初始化页面
+
+    4.POST /carInfo/{userId}
+        req body : {
+            ...
+        }
+        response : {
+                       id : 111
+                   }
+
+    5.POST /hotSpot/{userId}
+        req body : {
+            region : '',
+            hotPoint : ''
+        }
+        response : {
+                    id : 111 
+                   }
+      
+4.Entity定义:
+    User:{
+        id:123,//long类型
+        mobileNo:13795461562,
+        nickname:'',
+        realname:'',
+        englishname:'',
+        sex
+        age
+        home
+        company
+        carId :
+
+        
+    }
+
+    Car:{//车主的车子信息
+            id:111,
+            brand:'',
+            model:车型:
+            verticalLicense:车牌号:  
+            color:'',
+            seatNum:座位数:
+            
+
+        }
+
+    CarDict:{//车的类型
+                id : 111,
+                brand : 
+                车型:
+                color:
+
+
+            }
+    
+    HotSpot : {//热点地区
+                id:111, 
+                region : '' , //大的片区：临港-泥城  ， 张江
+                hotPoint : '东港',//张江地铁站，金科路地铁站 等
+              }
+    
+
+
+--云主机
+1.调研市面上的云主机类型\价格\性能等
+2.申请云主机
+3.部署代码:脚本化,自动花,daily build,github还有开源的集成测试,以及覆盖率测试
+
+

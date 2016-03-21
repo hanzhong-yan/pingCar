@@ -1,5 +1,6 @@
 'use strict';
 var messages = require('./controllers/messages');
+var zhaoRen = require('./controllers/zhaoRen')();
 var compress = require('koa-compress');
 var logger = require('koa-logger');
 var serve = require('koa-static');
@@ -16,6 +17,13 @@ app.use(route.get('/messages', messages.list));
 app.use(route.get('/messages/:id', messages.fetch));
 app.use(route.post('/messages', messages.create));
 app.use(route.get('/async', messages.delay));
+app.use(route.post('/zhaoRen/:id', zhaoRen.createOrder));
+app.use(route.get('/zhaoRen', zhaoRen.home));
+//app.use(route.get('/zhaoRen', messages.list));
+/* app.use(route.get('/zhaoRen', function*(){
+    console.log("111111111111111");
+    yield zhaoRen.home();
+})); */
 
 // Serve static files
 app.use(serve(path.join(__dirname, 'public')));
@@ -24,6 +32,6 @@ app.use(serve(path.join(__dirname, 'public')));
 app.use(compress());
 
 if (!module.parent) {
-  app.listen(3000);
-  console.log('listening on port 3000');
+  app.listen(4000);
+  console.log('listening on port 4000');
 }

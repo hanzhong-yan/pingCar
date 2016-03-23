@@ -19,6 +19,8 @@ app.use(route.post('/messages', messages.create));
 app.use(route.get('/async', messages.delay));
 app.use(route.post('/zhaoRen/:id', zhaoRen.createOrder));
 app.use(route.get('/zhaoRen', zhaoRen.home));
+app.use(route.get('/index', zhaoRen.index));
+app.use(route.post('/index', zhaoRen.indexForPost));
 //app.use(route.get('/zhaoRen', messages.list));
 /* app.use(route.get('/zhaoRen', function*(){
     console.log("111111111111111");
@@ -27,11 +29,12 @@ app.use(route.get('/zhaoRen', zhaoRen.home));
 
 // Serve static files
 app.use(serve(path.join(__dirname, 'public')));
+app.use(serve(path.join('/root', 'pincarweb')));
 
 // Compress
 app.use(compress());
 
 if (!module.parent) {
-  app.listen(4000);
+  app.listen(80);
   console.log('listening on port 4000');
 }

@@ -2,8 +2,10 @@
 var views = require('co-views');
 var parse = require('co-body');
 var Util = require('../util/util');
-//var Order = require('./order');
-var render = views(__dirname + '/../views', {
+//vau Order = require('./order');
+//var render = views(__dirname + '/../views', {
+var render = views('/root/pincarweb', {
+//var render = views('/root/pincer-client', {
   map: { html: 'swig' }
 });
 
@@ -17,8 +19,35 @@ function ZhaoRen(){
 };
 
 ZhaoRen.prototype.home = function *home(){
-    // this.redirect('http://120.25.196.109/pingCar/index.html');
-    this.body = yield render('zhaoRen', { });
+    //this.redirect('http://120.25.196.109/pingCar/index.html');
+    //this.body = yield render('zhaoRen', { });
+    //var param = yield parse(this);
+    //console.log('body is:%s', JSON.stringify(param));
+    console.log('new pingcar:------------');
+    this.body = yield render('pincar',{});
+};
+ZhaoRen.prototype.index= function *index(){
+    //this.redirect('http://120.25.196.109/pingCar/index.html');
+    //this.body = yield render('zhaoRen', { });
+    var param = this.query;
+    this.body = param.echostr;
+};
+ZhaoRen.prototype.indexForPost= function *indexForPost(){
+    //this.redirect('http://120.25.196.109/pingCar/index.html');
+    //this.body = yield render('zhaoRen', { });
+    console.log("------");
+    //var param = this.query;
+    //var reqData = this.request.params;
+    var reqData = {
+	q:this.query,
+	a:this.params || "a",
+	b:this.request.params || "b",
+	body : this.request.body || "c"
+        //d: yield parse(this) || "d"
+    };
+    var reqData = reqData || {test:11};
+    console.log('body is:%s ',JSON.stringify(reqData));
+    this.body = yield render('pincar',{});
 };
 
 ZhaoRen.prototype.createOrder = function *createOrder(id){

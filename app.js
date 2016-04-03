@@ -1,6 +1,7 @@
 'use strict';
 var messages = require('./controllers/messages');
 var zhaoRen = require('./controllers/zhaoRen')();
+var zhaoChe = require('./controllers/zhaoChe')();
 var compress = require('koa-compress');
 var logger = require('koa-logger');
 var serve = require('koa-static');
@@ -11,6 +12,12 @@ var app = module.exports = koa();
 
 // Logger
 app.use(logger());
+
+app.use(function *(next){
+    yield next;
+    console.log("the response body is:" + JSON.stringify(this.body));
+    this.set("access-control-allow-origin","*");
+});
 
 app.use(route.get('/', messages.home));
 app.use(route.get('/messages', messages.list));
@@ -26,15 +33,19 @@ app.use(route.post('/index', zhaoRen.indexForPost));
     console.log("111111111111111");
     yield zhaoRen.home();
 })); */
+app.use(route.post('/zhaoChe/:id', zhaoChe.createOrder));
 
 // Serve static files
+var staticRoot = '/Users/harry/workspace/pincarweb';
 app.use(serve(path.join(__dirname, 'public')));
-app.use(serve(path.join('/root', 'pincarweb')));
+app.use(serve(staticRoot));
+// app.use(serve(path.join('/root', 'pincarweb')));
 
 // Compress
 app.use(compress());
 
+var port = 80;
 if (!module.parent) {
-  app.listen(80);
-  console.log('listening on port 4000');
+  app.listen(port);
+  console.log('listening on port %d',port);
 }

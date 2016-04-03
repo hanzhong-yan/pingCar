@@ -60,6 +60,7 @@
 
     2.POST /zhaoren/{userId}
     req body:{
+        mobileNo : 111
         startPoint : '',//见hotSpot表
         destination : '',
         time : '21:15',//出发时间，精确到分

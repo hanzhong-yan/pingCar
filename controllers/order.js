@@ -1,5 +1,7 @@
 
 var Util = require('../util/util');
+var dateFormat = require('dateformat');
+var fs = require("fs");
 //order sample
 /* var orderSample = {
     id : 201603172010501231 ,
@@ -36,6 +38,7 @@ Order.save = function(order){
     order.modifyTime = new Date();
     console.log('save order of : ' + JSON.stringify(order));
     this.cache[order.id] = order ; 
+    Order.persistToFile();
 };
 
 Order.matchPingChe = function(order){
@@ -90,6 +93,19 @@ Order.matchPingChe = function(order){
        }); */
    }
 };
+
+var persisting = 0;//是否真正持久化
+Order.persistToFile = function(){
+    if(persisting === 1) return;
+    persisting = 1;
+    var fileName = './data/Order_' + dateFormat(new Date(),"yyyymmdd");
+    var data = JSON.stringify(Order.cache);
+    fs.writeFile(fileName,data,function(err){
+        persisting = 0;
+        if(err) console.log('occurred error when persist order:%s',err);
+        else console.log("finished of persist order")
+    });
+}
 
 Order.cache = {};
 //TODO:cache的持久化

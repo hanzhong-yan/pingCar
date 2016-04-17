@@ -26,7 +26,9 @@ app.use(route.post('/messages', messages.create));
 app.use(route.get('/async', messages.delay));
 app.use(route.post('/zhaoRen/:id', zhaoRen.createOrder));
 app.use(route.get('/zhaoRen', zhaoRen.home));
+app.use(route.get('/zhaoChe', zhaoRen.homeZhaoChe));
 app.use(route.get('/index', zhaoRen.index));
+app.use(route.get('/getAllOrder', zhaoRen.allOrder));
 app.use(route.post('/index', zhaoRen.indexForPost));
 //app.use(route.get('/zhaoRen', messages.list));
 /* app.use(route.get('/zhaoRen', function*(){
@@ -36,6 +38,7 @@ app.use(route.post('/index', zhaoRen.indexForPost));
 app.use(route.post('/zhaoChe/:id', zhaoChe.createOrder));
 
 // Serve static files
+var staticRoot = '/Users/harry/workspace/pincarweb';
 var staticRoot = '/Users/harry/workspace/pincarweb';
 app.use(serve(path.join(__dirname, 'public')));
 app.use(serve(staticRoot));

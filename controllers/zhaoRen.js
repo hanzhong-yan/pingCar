@@ -27,8 +27,14 @@ ZhaoRen.prototype.home = function *home(){
     //var param = yield parse(this);
     //console.log('body is:%s', JSON.stringify(param));
     console.log('new pingcar:------------');
-    this.body = yield render('html/pincar',{});
+    //this.body = yield render('html/pincar',{});
+    //this.redirect('http://120.25.196.109/pincar.html#&menuId=zhaoRen');
+    this.redirect('http://192.168.31.158:8080/pincarweb/pincar.html#&menuId=zhaoRen');
 };
+ZhaoRen.prototype.homeZhaoChe = function *homeZhaoChe(){
+    //this.redirect('http://120.25.196.109/pincar.html#&menuId=zhaoChe');
+    this.redirect('http://192.168.31.158:8080/pincarweb/pincar.html#&menuId=zhaoChe');
+}
 ZhaoRen.prototype.index= function *index(){
     //this.redirect('http://120.25.196.109/pingCar/index.html');
     //this.body = yield render('zhaoRen', { });
@@ -76,6 +82,10 @@ var orderSample = {
     remainderSeatNum : 3 
 };
 
+
+ZhaoRen.prototype.allOrder= function *allOrder(){
+    var allOrder = order.getAllOrder();
+}
 
 /* var Order = {};
 Order.save = function(order){

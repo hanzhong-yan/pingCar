@@ -44,37 +44,42 @@ Order.save = function(order){
 Order.matchPingChe = function(order){
    //mock it  
    var result = [];
-   var isMock = order.isMock || 1;
+   var isMock = order.isMock || 0;
    if(isMock == 1){
        result = mockMatch(order);
    }else{
        result = realMatch(order);
    }
-   console.log("the match result is:%s" + JSON.stringify(result));
+   console.log("the match result is:%s" , JSON.stringify(result));
    return result ; 
 
    function realMatch(reqOrder){
        console.log("all order is:" + JSON.stringify(Order.cache));
        var reqOrderTime = new Date(reqOrder.time);
        var matched = [];
-       if(Order.cache && Order.cache.length > 0){
-            Order.cache.forEach(function(order,idx){
-                //ignore 过期的订单 
-                var orderTime = new Date(order.time);
-                if(orderTime.getTime() < (new Date()).getTime()) return;
+       if(Order.cache ){
+           for(var id in Order.cache){
+               var order = Order.cache[id];
+               //ignore 过期的订单 
+               var orderTime = new Date(order.time);
+               console.log("the order is : " + JSON.stringify(order));
+               console.log("the req order is : " + JSON.stringify(reqOrder));
+               if(orderTime.getTime() < (new Date()).getTime()) return;
 
-                if(order.status && order.status !== 0) return ; //订单已满或者已取消
-                if(order.type != reqOrder.type){//1:车找人  2:人找车 
-                    order.score = Math.abs(orderTime - reqOrderTime);
-                    matched.push(order);
-                }
-            });
+               if(order.status && order.status !== 0) return ; //订单已满或者已取消
+               if(parseInt(order.type) != parseInt(reqOrder.type)){//1:车找人  2:人找车 
+                   order.score = Math.abs(orderTime - reqOrderTime);
+                   console.log("===============matched 1" + JSON.stringify(order));
+                   matched.push(order);
+               }
+           }
        }
        if(matched && matched.length > 0){
            matched.sort(function(o1,o2){
                return o1.score - o2.score ; 
            });
        }
+       return matched ; 
    }
 
    function mockMatch(order){

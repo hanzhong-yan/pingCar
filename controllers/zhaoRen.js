@@ -10,6 +10,8 @@ var render = views(staticRoot, {
   map: { html: 'swig' }
 });
 
+var weixin = require('weixin-api');
+
 // var zhaoRen = {
 // };
 console.log('Order is :' + JSON.stringify(Order));
@@ -56,8 +58,22 @@ ZhaoRen.prototype.indexForPost= function *indexForPost(){
     };
     var reqData = reqData || {test:11};
     console.log('body is:%s ',JSON.stringify(reqData));
-    this.body = yield render('pincar',{});
+    //this.body = yield render('pincar',{});
+    weixin.loop(req,res);
 };
+
+weixin.textMsg(function(msg){
+    console.log("textMsg received");
+    console.log(JSON.stringify(msg));
+    resMsg = {
+        fromUserName : msg.toUserName,
+        toUserName : msg.fromUserName,
+        msgType : "text",
+        content : "这是文本回复",
+        funcFlag : 0
+    };
+    weixin.sendMsg(resMsg);
+});
 
 ZhaoRen.prototype.createOrder = function *createOrder(userId){
     //save order 

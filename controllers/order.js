@@ -1,4 +1,3 @@
-
 var Util = require('../util/util');
 var dateFormat = require('dateformat');
 var fs = require("fs");
@@ -29,6 +28,7 @@ Order.createOrder = function(order){
 Order.save = function(order){
     if(!order.id){
         var id = Util.mkTimestampId();
+        console.log("**********************create new order :" + id);
         order.id = id + "" + order.type;
         order.addTime = new Date();
     }else{

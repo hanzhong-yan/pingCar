@@ -39,7 +39,6 @@ app.use(route.post('/zhaoChe/:id', zhaoChe.createOrder));
 
 // Serve static files
 var staticRoot = '/Users/harry/workspace/pincarweb';
-var staticRoot = '/Users/harry/workspace/pincarweb';
 app.use(serve(path.join(__dirname, 'public')));
 app.use(serve(staticRoot));
 // app.use(serve(path.join('/root', 'pincarweb')));
@@ -52,3 +51,13 @@ if (!module.parent) {
   app.listen(port);
   console.log('listening on port %d',port);
 }
+
+var config = {
+    appId : '' ,
+
+};
+
+function init(){
+    
+}
+init();

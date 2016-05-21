@@ -53,7 +53,7 @@ ZhaoRen.prototype.index= function *index(){
     this.body = param.echostr;
 };
 ZhaoRen.prototype.indexForPost= function *indexForPost(){
-  var bodyParam = this.request.body;
+    var bodyParam = this.request.body;
     console.log("------" + bodyParam);
     //var param = this.query;
     //var reqData = this.request.params;

@@ -11,12 +11,14 @@ var compress = require('koa-compress');
 var logger = require('koa-logger');
 var serve = require('koa-static');
 var route = require('koa-route');
+var xmlParser = require('koa-xml-body').default; 
 var koa = require('koa');
 var path = require('path');
 var app = module.exports = koa();
 
 // Logger
 app.use(logger());
+app.use(xmlParser());
 
 app.use(function *(next){
     yield next;

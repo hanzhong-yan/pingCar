@@ -2,7 +2,9 @@
 var views = require('co-views');
 var parse = require('co-body');
 var Util = require('../util/util');
+var _= require('../util/underscore.js');
 var Order = require('./order.js');
+var queryString = require("querystring");
 //var render = views(__dirname + '/../views', {
 var staticRoot = '/Users/harry/workspace/pincarweb';
 // var staticRoot = '/root/pincarweb';
@@ -12,10 +14,12 @@ var render = views(staticRoot, {
 
 var weixin = require('weixin-api');
 
+
+var config = require('../app.js').config;
 // var zhaoRen = {
 // };
-console.log('Order is :' + JSON.stringify(Order));
-console.log('Util is :' + JSON.stringify(Util));
+//console.log('Order is :' + JSON.stringify(Order));
+//console.log('Util is :' + JSON.stringify(Util));
 
 module.exports = ZhaoRen;
 function ZhaoRen(){
@@ -24,18 +28,23 @@ function ZhaoRen(){
 };
 
 ZhaoRen.prototype.home = function *home(){
-    //this.redirect('http://120.25.196.109/pingCar/index.html');
-    //this.body = yield render('zhaoRen', { });
-    //var param = yield parse(this);
-    //console.log('body is:%s', JSON.stringify(param));
     console.log('new pingcar:------------');
-    //this.body = yield render('html/pincar',{});
-    //this.redirect('http://120.25.196.109/pincar.html#&menuId=zhaoRen');
-    this.redirect('http://192.168.31.158:8080/pincarweb/pincar.html#&menuId=zhaoRen');
+    var openId = this.query.openId ; 
+    var userId = getUserByOpenId(openId);
+    var lastestOrder = Order.getUserLastestOrder(userId);
+    var qsObj = {};
+    qsObj = _.pick(lastestOrder,"userId","type","card","phone","seat","startPoint","destination","detail","time","id");
+    var redirectUrl = 'http://'+config.domain+'/pincarweb/pincar.html#menuId=zhaoRen';
+    if(!_.isEmpty(qsObj)){
+        redirectUrl += "#" + queryString.stringify(qsObj,"#");
+    }else{
+        redirectUrl += "#" + "userId=" + openId;
+    }
+    this.redirect(redirectUrl);
 };
 ZhaoRen.prototype.homeZhaoChe = function *homeZhaoChe(){
     //this.redirect('http://120.25.196.109/pincar.html#&menuId=zhaoChe');
-    this.redirect('http://192.168.31.158:8080/pincarweb/pincar.html#&menuId=zhaoChe');
+    this.redirect('http://'+config.domain+'/pincarweb/pincar.html#menuId=zhaoChe');
 }
 ZhaoRen.prototype.index= function *index(){
     //this.redirect('http://120.25.196.109/pingCar/index.html');
@@ -44,28 +53,44 @@ ZhaoRen.prototype.index= function *index(){
     this.body = param.echostr;
 };
 ZhaoRen.prototype.indexForPost= function *indexForPost(){
-    //this.redirect('http://120.25.196.109/pingCar/index.html');
-    //this.body = yield render('zhaoRen', { });
-    console.log("------");
+  var bodyParam = this.request.body;
+    console.log("------" + bodyParam);
     //var param = this.query;
     //var reqData = this.request.params;
     var reqData = {
-	q:this.query,
-	a:this.params || "a",
-	b:this.request.params || "b",
-	body : this.request.body || "c"
+        q:this.query,
+        a:this.params || "a",
+        b:this.request.queryString || "b",
+        body : bodyParam || "c"
         //d: yield parse(this) || "d"
     };
     var reqData = reqData || {test:11};
     console.log('body is:%s ',JSON.stringify(reqData));
-    //this.body = yield render('pincar',{});
-    weixin.loop(req,res);
+
+    var rawMsg = bodyParam.xml;
+    var msg = {
+                fromUserName : rawMsg.toUserName,
+                toUserName : rawMsg.fromUserName,
+                msgType : "text",
+                content : "这是文本回复",
+                funcFlag : 0
+    };
+    var output = "" + "<xml>"+
+    "<ToUserName><![CDATA[" + msg.toUserName + "]]></ToUserName>" +
+         "<FromUserName><![CDATA[" + msg.fromUserName + "]]></FromUserName>" +
+         "<CreateTime>" + (new Date()).getTime() + "</CreateTime>" +
+         "<MsgType><![CDATA[" + msg.msgType + "]]></MsgType>" +
+         "<Content><![CDATA[" + msg.content + "]]></Content>" +
+         "<FuncFlag>" + msg.funcFlag + "</FuncFlag>" +
+    "</xml>";
+    //weixin.loop(this.req,this.res);
+    this.body = output;  
 };
 
 weixin.textMsg(function(msg){
     console.log("textMsg received");
     console.log(JSON.stringify(msg));
-    resMsg = {
+    var resMsg = {
         fromUserName : msg.toUserName,
         toUserName : msg.fromUserName,
         msgType : "text",
@@ -101,6 +126,13 @@ var orderSample = {
 
 ZhaoRen.prototype.allOrder= function *allOrder(){
     var allOrder = order.getAllOrder();
+}
+
+
+function getUserByOpenId(openId){
+    //从用户表中检查是否已经注册，如果没有注册，那么注册，反之，直接获取用户的id
+    //暂时以openId为用户的id
+    return openId;
 }
 
 /* var Order = {};

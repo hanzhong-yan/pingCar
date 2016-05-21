@@ -1,4 +1,5 @@
 var Util = require('../util/util');
+var _= require('../util/underscore.js');
 var dateFormat = require('dateformat');
 var fs = require("fs");
 //order sample
@@ -110,6 +111,41 @@ Order.persistToFile = function(){
         if(err) console.log('occurred error when persist order:%s',err);
         else console.log("finished of persist order")
     });
+}
+//加载最近5天的数据
+Order.load = function(){
+    var fileName = './data/Order_' + dateFormat(new Date(),"yyyymmdd");
+    fs.readFile(fileName,function(err,data){
+        if(err) throw err;
+        Order.cache = JSON.parse(data);
+    });
+    Order.cache = Order.cache || {};
+    var i = 5;
+    while(i > 0){
+                
+        i--;
+    }
+}
+
+//找出用户最近一次的订单，考虑在时间上与当前比较贴近
+Order.getUserLastestOrder = function(userId){
+    var allUserOrder = [];
+    for(var orderId in Order.cache){
+       var order = Order.cache[orderId] ;
+       if(order.userId === userId){
+           allUserOrder.add(order);
+       }
+    }
+    if(allUserOrder.length > 0){
+       allUserOrder.sort(function(a,b){
+       var time2MinuteOfNow = util.time2Minute(now);
+          return diffTime(util.time2Minute(a.time),time2MinuteOfNow) - diffTime(util.time2Minute(b.time),time2MinuteOfNow)
+          function diffTime(a,b){
+              return Math.abs(a-b);
+          }
+       });    
+       return allUserOrder[0];
+    }
 }
 
 Order.cache = {};

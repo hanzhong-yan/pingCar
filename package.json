@@ -16,8 +16,12 @@
     "koa-logger": "^1.2.0",
     "koa-route": "^1.1.4",
     "koa-static": "^1.4.5",
+    "node-weixin-config": "^0.3.0",
+    "node-weixin-menu": "^0.6.0",
+    "node-weixin-settings": "^0.2.0",
     "swig": "^1.3.2",
-    "weixin-api" : ">=0.1.6"
+    "weixin-api": ">=0.1.6",
+    "koa-xml-body": "^1.0.3"
   },
   "devDependencies": {
     "supertest": "^0.12.1",

@@ -1,5 +1,10 @@
 'use strict';
-var messages = require('./controllers/messages');
+var config = require('./config.js').config;
+config = config[config['env']];
+exports.config = config;
+console.log(config);
+
+//var messages = require('./controllers/messages');
 var zhaoRen = require('./controllers/zhaoRen')();
 var zhaoChe = require('./controllers/zhaoChe')();
 var compress = require('koa-compress');
@@ -15,15 +20,14 @@ app.use(logger());
 
 app.use(function *(next){
     yield next;
-    console.log("the response body is:" + JSON.stringify(this.body));
-    this.set("access-control-allow-origin","*");
+    //console.log("the response body is:" + JSON.stringify(this.body)); this.set("access-control-allow-origin","*");
 });
 
-app.use(route.get('/', messages.home));
-app.use(route.get('/messages', messages.list));
-app.use(route.get('/messages/:id', messages.fetch));
-app.use(route.post('/messages', messages.create));
-app.use(route.get('/async', messages.delay));
+// app.use(route.get('/', messages.home));
+// app.use(route.get('/messages', messages.list));
+// app.use(route.get('/messages/:id', messages.fetch));
+// app.use(route.post('/messages', messages.create));
+// app.use(route.get('/async', messages.delay));
 app.use(route.post('/zhaoRen/:id', zhaoRen.createOrder));
 app.use(route.get('/zhaoRen', zhaoRen.home));
 app.use(route.get('/zhaoChe', zhaoRen.homeZhaoChe));
@@ -38,26 +42,21 @@ app.use(route.post('/index', zhaoRen.indexForPost));
 app.use(route.post('/zhaoChe/:id', zhaoChe.createOrder));
 
 // Serve static files
-var staticRoot = '/Users/harry/workspace/pincarweb';
-app.use(serve(path.join(__dirname, 'public')));
+//var staticRoot = '/Users/harry/workspace/pincarweb';
+var staticRoot = config.staticRoot;
+//app.use(serve(path.join(__dirname, 'public')));
 app.use(serve(staticRoot));
-// app.use(serve(path.join('/root', 'pincarweb')));
-
 // Compress
 app.use(compress());
 
-var port = 80;
+var port = config.port;
 if (!module.parent) {
   app.listen(port);
   console.log('listening on port %d',port);
 }
 
-var config = {
-    appId : '' ,
-
-};
 
 function init(){
-    
+	console.log('the config is:' + JSON.stringify(config));
 }
 init();

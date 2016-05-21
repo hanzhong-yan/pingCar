@@ -152,3 +152,17 @@
 3.部署代码:脚本化,自动花,daily build,github还有开源的集成测试,以及覆盖率测试
 
 
+$ npm install --global node-weixin-menu
+
+$ wxmenu --help
+
+$#获取菜单
+$ wxmenu get --id WX_ID --secret WX_SECRET --token WX_TOKEN    
+$#获取自定义菜单
+$ wxmenu customize --id WX_ID --secret WX_SECRET --token WX_TOKEN
+$#删除菜单
+$ wxmenu remove --id WX_ID --secret WX_SECRET --token WX_TOKEN
+$#创建菜单
+$ wxmenu create --id WX_ID --secret WX_SECRET --token WX_TOKEN --menu menu.json
+注：使用时需要将WX_ID, WX_SECRET, WX_TOKEN,替换成你自己的真实参数
+

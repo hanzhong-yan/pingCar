@@ -9,7 +9,7 @@ exports.config=
     },
     product : {
         port:80,
-        staticRoot : '/root/pincarweb',
+        staticRoot : '/root',
         domain: 'www.52pincar.com'
     }
 };

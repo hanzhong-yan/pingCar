@@ -1,4 +1,5 @@
 var Util = require('../util/util');
+var util = Util;
 var _= require('../util/underscore.js');
 var dateFormat = require('dateformat');
 var fs = require("fs");
@@ -125,20 +126,27 @@ Order.load = function(){
                 
         i--;
     }
+
+    console.log("order load finished");
 }
 
+Order.load();
+
+
+
+
 //找出用户最近一次的订单，考虑在时间上与当前比较贴近
-Order.getUserLastestOrder = function(userId){
+Order.getUserLastestOrder = function(userId,type){
     var allUserOrder = [];
     for(var orderId in Order.cache){
        var order = Order.cache[orderId] ;
-       if(order.userId === userId){
-           allUserOrder.add(order);
+       if(order.userId === userId && order.type == type){
+           allUserOrder.push(order);
        }
     }
     if(allUserOrder.length > 0){
        allUserOrder.sort(function(a,b){
-       var time2MinuteOfNow = util.time2Minute(now);
+       var time2MinuteOfNow = util.time2Minute(new Date());
           return diffTime(util.time2Minute(a.time),time2MinuteOfNow) - diffTime(util.time2Minute(b.time),time2MinuteOfNow)
           function diffTime(a,b){
               return Math.abs(a-b);
@@ -147,6 +155,7 @@ Order.getUserLastestOrder = function(userId){
        return allUserOrder[0];
     }
 }
+
 
 Order.cache = {};
 //TODO:cache的持久化

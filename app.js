@@ -22,7 +22,8 @@ app.use(xmlParser());
 
 app.use(function *(next){
     yield next;
-    //console.log("the response body is:" + JSON.stringify(this.body)); this.set("access-control-allow-origin","*");
+    //console.log("the response body is:" + JSON.stringify(this.body)); 
+    this.set("access-control-allow-origin","*");
 });
 
 // app.use(route.get('/', messages.home));

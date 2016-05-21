@@ -29,9 +29,10 @@ function ZhaoRen(){
 
 ZhaoRen.prototype.home = function *home(){
     console.log('new pingcar:------------');
-    var openId = this.query.openId ; 
+    var type = 1;
+    var openId = this.query.openId || "123"; 
     var userId = getUserByOpenId(openId);
-    var lastestOrder = Order.getUserLastestOrder(userId);
+    var lastestOrder = Order.getUserLastestOrder(userId,type);
     var qsObj = {};
     qsObj = _.pick(lastestOrder,"userId","type","card","phone","seat","startPoint","destination","detail","time","id");
     var redirectUrl = 'http://'+config.domain+'/pincarweb/pincar.html#menuId=zhaoRen';
@@ -44,7 +45,23 @@ ZhaoRen.prototype.home = function *home(){
 };
 ZhaoRen.prototype.homeZhaoChe = function *homeZhaoChe(){
     //this.redirect('http://120.25.196.109/pincar.html#&menuId=zhaoChe');
-    this.redirect('http://'+config.domain+'/pincarweb/pincar.html#menuId=zhaoChe');
+    //this.redirect('http://'+config.domain+'/pincarweb/pincar.html#menuId=zhaoChe');
+
+    var type = 2;//找车
+    var openId = this.query.openId || '123'; 
+    var userId = getUserByOpenId(openId);
+    var lastestOrder = Order.getUserLastestOrder(userId,type);
+    var qsObj = {};
+    qsObj = _.pick(lastestOrder,"userId","type","card","phone","seat","startPoint","destination","detail","time","id");
+    var redirectUrl = 'http://'+config.domain+'/pincarweb/pincar.html#menuId=zhaoChe';
+    if(!_.isEmpty(qsObj)){
+        redirectUrl += "#" + queryString.stringify(qsObj,"#");
+    }else{
+        redirectUrl += "#" + "userId=" + openId;
+    }
+    this.redirect(redirectUrl);
+
+
 }
 ZhaoRen.prototype.index= function *index(){
     //this.redirect('http://120.25.196.109/pingCar/index.html');

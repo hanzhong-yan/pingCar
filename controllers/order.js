@@ -24,19 +24,23 @@ Order.createOrder = function(order){
     Order.save(order);
     //检查有没有满足该订单的找人的信息
     var result = Order.matchPingChe(order);
+    if(result && result.length > 20){
+      result = result.slice(0,19);
+    }
     result = {order:order,data:result};
     return result;
 };
 Order.save = function(order){
     if(!order.id){
         var id = Util.mkTimestampId();
-        console.log("**********************create new order :" + id);
+        //console.log("**********************create new order :" + id);
         order.id = id + "" + order.type;
         order.addTime = new Date();
     }else{
         //update the order by id
         this.cache[order.id] = order ; 
     }
+    order.time = order.time.replace('T',' ');
     order.modifyTime = new Date();
     console.log('save order of : ' + JSON.stringify(order));
     this.cache[order.id] = order ; 
@@ -52,7 +56,7 @@ Order.matchPingChe = function(order){
    }else{
        result = realMatch(order);
    }
-   console.log("the match result is:%s" , JSON.stringify(result));
+   //console.log("the match result is:%s" , JSON.stringify(result));
    return result ; 
 
    function realMatch(reqOrder){
@@ -64,14 +68,14 @@ Order.matchPingChe = function(order){
                var order = Order.cache[id];
                //ignore 过期的订单 
                var orderTime = new Date(order.time);
-               console.log("the order is : " + JSON.stringify(order));
-               console.log("the req order is : " + JSON.stringify(reqOrder));
-               if(orderTime.getTime() < (new Date()).getTime()) return;
+               //console.log("the order is : " + JSON.stringify(order));
+               //console.log("the req order is : " + JSON.stringify(reqOrder));
+               if(orderTime.getTime() < (new Date()).getTime()) continue;
 
-               if(order.status && order.status !== 0) return ; //订单已满或者已取消
+               if(order.status && order.status !== 0) continue; //订单已满或者已取消
                if(parseInt(order.type) != parseInt(reqOrder.type)){//1:车找人  2:人找车 
                    order.score = Math.abs(orderTime - reqOrderTime);
-                   console.log("===============matched 1" + JSON.stringify(order));
+                   //console.log("===============matched 1" + JSON.stringify(order));
                    matched.push(order);
                }
            }
@@ -113,24 +117,56 @@ Order.persistToFile = function(){
         else console.log("finished of persist order")
     });
 }
+
+var loadFilePromise = function(fileName){
+  var promise = new Promise(function(resolve,reject){
+    if(!fs.existsSync(fileName)) {
+      console.log("the file:%s is not exists",fileName);
+      resolve({});
+    }else{
+      fs.readFile(fileName,function(err,data){
+        if(err) reject(err);
+        resolve(JSON.parse(data));
+      });
+    }
+  });
+  return promise;
+};
+
 //加载最近5天的数据
 Order.load = function(){
-    var fileName = './data/Order_' + dateFormat(new Date(),"yyyymmdd");
-    fs.readFile(fileName,function(err,data){
-        if(err) throw err;
-        Order.cache = JSON.parse(data);
-    });
     Order.cache = Order.cache || {};
-    var i = 5;
-    while(i > 0){
-                
+    var oldDays = [];
+    var i = 7;
+    var now = new Date();
+    while(i > -1){
+        var oldDay = new Date();
+        oldDay.setDate(oldDay.getDate()-i);
+        oldDays.push(dateFormat(oldDay,"yyyymmdd"));
         i--;
+     }
+
+
+    var promiseArr = [];
+
+    for(var i=0;i<oldDays.length;i++){
+      var tmpFileName = './data/Order_' + oldDays[i];
+      promiseArr.push(loadFilePromise(tmpFileName));
     }
 
-    console.log("order load finished");
+    Promise.all(promiseArr).then(function(data){
+      for(var i=0;i<data.length;i++){
+        _.extend(Order.cache,data[i]);
+      }
+      console.log("order load finished");
+    }).catch(function(err){
+      console.log("occurred error when load data %s",err);
+    });
+
 }
 
 Order.load();
+
 
 
 
@@ -146,8 +182,8 @@ Order.getUserLastestOrder = function(userId,type){
     }
     if(allUserOrder.length > 0){
        allUserOrder.sort(function(a,b){
-       var time2MinuteOfNow = util.time2Minute(new Date());
-          return diffTime(util.time2Minute(a.time),time2MinuteOfNow) - diffTime(util.time2Minute(b.time),time2MinuteOfNow)
+          var time2MinuteOfNow = util.time2Minute(new Date());
+          return diffTime(util.time2Minute(a.time),time2MinuteOfNow) - diffTime(util.time2Minute(b.time),time2MinuteOfNow);
           function diffTime(a,b){
               return Math.abs(a-b);
           }

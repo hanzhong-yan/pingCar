@@ -30,13 +30,14 @@ function ZhaoRen(){
 ZhaoRen.prototype.home = function *home(){
     console.log('new pingcar:------------');
     var type = 1;
-    var openId = this.query.openId || "123"; 
+    var openId = this.query.openId || "1234"; 
     var userId = getUserByOpenId(openId);
     var lastestOrder = Order.getUserLastestOrder(userId,type);
     var qsObj = {};
     qsObj = _.pick(lastestOrder,"userId","type","card","phone","seat","startPoint","destination","detail","time","id");
     var redirectUrl = 'http://'+config.domain+'/pincarweb/pincar.html#menuId=zhaoRen';
     if(!_.isEmpty(qsObj)){
+        qsObj.time = qsObj.time.replace(' ','T');
         redirectUrl += "#" + queryString.stringify(qsObj,"#");
     }else{
         redirectUrl += "#" + "userId=" + openId;
@@ -48,13 +49,14 @@ ZhaoRen.prototype.homeZhaoChe = function *homeZhaoChe(){
     //this.redirect('http://'+config.domain+'/pincarweb/pincar.html#menuId=zhaoChe');
 
     var type = 2;//找车
-    var openId = this.query.openId || '123'; 
+    var openId = this.query.openId || '1234'; 
     var userId = getUserByOpenId(openId);
     var lastestOrder = Order.getUserLastestOrder(userId,type);
     var qsObj = {};
     qsObj = _.pick(lastestOrder,"userId","type","card","phone","seat","startPoint","destination","detail","time","id");
     var redirectUrl = 'http://'+config.domain+'/pincarweb/pincar.html#menuId=zhaoChe';
     if(!_.isEmpty(qsObj)){
+        qsObj.time = qsObj.time.replace(' ','T');
         redirectUrl += "#" + queryString.stringify(qsObj,"#");
     }else{
         redirectUrl += "#" + "userId=" + openId;
@@ -120,7 +122,8 @@ weixin.textMsg(function(msg){
 ZhaoRen.prototype.createOrder = function *createOrder(userId){
     //save order 
     var param = yield parse(this);
-    console.log('body is:%s :::%s', JSON.stringify(param),userId);
+    //console.log('body is:%s :::%s', JSON.stringify(param),userId);
+    if(userId == '1234') userId = -1;
     param.userId = userId;
     param.type = 1;//找人
     var result = Order.createOrder(param);

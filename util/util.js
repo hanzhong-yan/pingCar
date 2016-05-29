@@ -1,8 +1,9 @@
 var _ = require('./underscore');
 var date = require('date');
 var dateFormat = require('dateformat');
+var orderCount = 1; 
 module.exports.mkTimestampId = function(){
-    return  dateFormat(new Date(),"yyyymmddHHMMssSSS");
+    return  dateFormat(new Date(),"yyyymmddHHMMssl") + String(orderCount++);
 }
 
 module.exports.isAm= function(){

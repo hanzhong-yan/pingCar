@@ -49,7 +49,7 @@ ZhaoRen.prototype.homeZhaoChe = function *homeZhaoChe(){
     //this.redirect('http://'+config.domain+'/pincarweb/pincar.html#menuId=zhaoChe');
 
     var type = 2;//找车
-    var openId = this.query.openId || '1234'; 
+    var openId = this.query.openId || '12345'; 
     var userId = getUserByOpenId(openId);
     var lastestOrder = Order.getUserLastestOrder(userId,type);
     var qsObj = {};

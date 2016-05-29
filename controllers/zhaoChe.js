@@ -55,6 +55,7 @@ ZhaoChe.prototype.createOrder = function *createOrder(userId){
     //save order 
     var param = yield parse(this);
     console.log('body is:%s :::%s', JSON.stringify(param),userId);
+    if(userId == 12345) userId = -1;
     param.userId = userId;
     param.type = 2;//找车
     var result = Order.createOrder(param);

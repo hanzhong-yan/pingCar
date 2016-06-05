@@ -7,6 +7,7 @@ var https = require('https');
 var util = require('util');
 var _= require('../util/underscore.js');
 var Order = require('./order.js');
+var User = require('./user.js');
 var queryString = require("querystring");
 //var render = views(__dirname + '/../views', {
 var staticRoot = '/Users/harry/workspace/pincarweb';
@@ -33,6 +34,7 @@ function ZhaoRen(){
 ZhaoRen.prototype.home = function *home(){
     console.log('new pingcar:------------');
     var openId = this.query.openId || "1234"; 
+    var nickName = "";
 
     if(this.query.code){
 
@@ -41,6 +43,8 @@ ZhaoRen.prototype.home = function *home(){
         userInfo = yield getUserInfoOfWeixin(userInfo.access_token,userInfo.openid);
         console.log('the userInfo is:%j',userInfo);
         openId = userInfo.openId;
+        nickName = userInfo.nickname;
+        User.save(userInfo);
 
     }else{
 
@@ -64,7 +68,7 @@ ZhaoRen.prototype.home = function *home(){
     var userId = getUserByOpenId(openId);
     var lastestOrder = Order.getUserLastestOrder(userId,type);
     var qsObj = {};
-    qsObj = _.pick(lastestOrder,"userId","type","card","phone","seat","startPoint","destination","detail","time","id");
+    qsObj = _.pick(lastestOrder,"userId","nickName","type","card","phone","seat","startPoint","destination","detail","time","id");
     
     var redirectUrl = 'http://'+config.domain+'/pincarweb/pincar.html#menuId=zhaoRen';
 
@@ -72,7 +76,7 @@ ZhaoRen.prototype.home = function *home(){
         qsObj.time = qsObj.time.replace(' ','T');
         redirectUrl += "#" + queryString.stringify(qsObj,"#");
     }else{
-        redirectUrl += "#" + "userId=" + openId;
+        redirectUrl += "#" + "userId=" + openId+ "#nickName=" + nickName;
     }
     this.redirect(redirectUrl);
 };
@@ -130,19 +134,47 @@ function getUserInfoOfWeixin(at,openId){
 ZhaoRen.prototype.homeZhaoChe = function *homeZhaoChe(){
     //this.redirect('http://120.25.196.109/pincar.html#&menuId=zhaoChe');
     //this.redirect('http://'+config.domain+'/pincarweb/pincar.html#menuId=zhaoChe');
+    var openId = this.query.openId || "12345"; 
+    var nickName = "";
+
+    if(this.query.code){
+
+        //get openId 
+        var userInfo = yield getPageAuthToken(this.query.code);
+        userInfo = yield getUserInfoOfWeixin(userInfo.access_token,userInfo.openid);
+        console.log('the userInfo is:%j',userInfo);
+        openId = userInfo.openId;
+        nickName = userInfo.nickname;
+        User.save(userInfo);
+
+    }else{
+
+        var appId = config.appId;
+        var redirectUrl = 'http://'+config.domain+'/zhaoChe';
+        redirectUrl = encodeURI(redirectUrl);
+        var scope = "snsapi_userinfo";
+
+        var authUrl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=%s&state=1#wechat_redirect";
+
+        authUrl = util.format(authUrl,appId,redirectUrl,scope);
+
+        this.redirect(authUrl);
+        return;
+    }
+
+
 
     var type = 2;//找车
-    var openId = this.query.openId || '12345'; 
     var userId = getUserByOpenId(openId);
     var lastestOrder = Order.getUserLastestOrder(userId,type);
     var qsObj = {};
-    qsObj = _.pick(lastestOrder,"userId","type","card","phone","seat","startPoint","destination","detail","time","id");
+    qsObj = _.pick(lastestOrder,"userId","nickName","type","card","phone","seat","startPoint","destination","detail","time","id");
     var redirectUrl = 'http://'+config.domain+'/pincarweb/pincar.html#menuId=zhaoChe';
     if(!_.isEmpty(qsObj)){
         qsObj.time = qsObj.time.replace(' ','T');
         redirectUrl += "#" + queryString.stringify(qsObj,"#");
     }else{
-        redirectUrl += "#" + "userId=" + openId;
+        redirectUrl += "#" + "userId=" + openId + "#nickName=" + nickName;
     }
     this.redirect(redirectUrl);
 

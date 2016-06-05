@@ -2,6 +2,7 @@
 var views = require('co-views');
 var parse = require('co-body');
 var Util = require('../util/util');
+var util = require('util');
 var _= require('../util/underscore.js');
 var Order = require('./order.js');
 var queryString = require("querystring");
@@ -29,13 +30,32 @@ function ZhaoRen(){
 
 ZhaoRen.prototype.home = function *home(){
     console.log('new pingcar:------------');
+
+    if(this.query.code){
+
+    }else{
+
+        var appId = config.appId;
+        var redirectUrl = 'http://'+config.domain+'/pincarweb/pincar.html#menuId=zhaoRen';
+        redirectUrl = encodeURI(redirectUrl);
+        var scope = "snsapi_base";
+
+        var authUrl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=%s&state=1#wechat_redirect";
+
+        authUrl = util.format(authUrl,appId,redirectUrl,scope);
+
+        this.redirect(authUrl);
+        return;
+    }
+
+
     var type = 1;
     var openId = this.query.openId || "1234"; 
     var userId = getUserByOpenId(openId);
     var lastestOrder = Order.getUserLastestOrder(userId,type);
     var qsObj = {};
     qsObj = _.pick(lastestOrder,"userId","type","card","phone","seat","startPoint","destination","detail","time","id");
-    var redirectUrl = 'http://'+config.domain+'/pincarweb/pincar.html#menuId=zhaoRen';
+    
     if(!_.isEmpty(qsObj)){
         qsObj.time = qsObj.time.replace(' ','T');
         redirectUrl += "#" + queryString.stringify(qsObj,"#");

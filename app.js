@@ -7,6 +7,8 @@ console.log(config);
 //var messages = require('./controllers/messages');
 var zhaoRen = require('./controllers/zhaoRen')();
 var zhaoChe = require('./controllers/zhaoChe')();
+var order = require('./controllers/order');
+
 var compress = require('koa-compress');
 var logger = require('koa-logger');
 var serve = require('koa-static');
@@ -37,6 +39,9 @@ app.use(route.get('/zhaoChe', zhaoRen.homeZhaoChe));
 app.use(route.get('/index', zhaoRen.index));
 app.use(route.get('/getAllOrder', zhaoRen.allOrder));
 app.use(route.post('/index', zhaoRen.indexForPost));
+
+app.use(route.post('/getOrderList', order.getOrderList));
+app.use(route.get('/getAllOrderList', order.getAllOrderList));
 //app.use(route.get('/zhaoRen', messages.list));
 /* app.use(route.get('/zhaoRen', function*(){
     console.log("111111111111111");

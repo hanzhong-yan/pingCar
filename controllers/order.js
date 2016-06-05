@@ -3,6 +3,7 @@ var util = Util;
 var _= require('../util/underscore.js');
 var dateFormat = require('dateformat');
 var fs = require("fs");
+var parse = require('co-body');
 //order sample
 /* var orderSample = {
     id : 201603172010501231 ,
@@ -74,6 +75,7 @@ Order.matchPingChe = function(order){
 
                if(order.status && order.status !== 0) continue; //订单已满或者已取消
                if(parseInt(order.type) != parseInt(reqOrder.type)){//1:车找人  2:人找车 
+                   //if(order.startPoint)
                    order.score = Math.abs(orderTime - reqOrderTime);
                    //console.log("===============matched 1" + JSON.stringify(order));
                    matched.push(order);
@@ -190,6 +192,46 @@ Order.getUserLastestOrder = function(userId,type){
        });    
        return allUserOrder[0];
     }
+}
+
+Order.getAllOrderList = function*(){
+  this.body = Order.cache;
+}
+
+Order.getOrderList = function*(type,pageNo){
+    var body = yield parse(this);
+    var pageSize = 10 ; 
+    type = body.type | 0;
+    pageNo = body.pageNo | 0;
+    var start = pageNo * pageSize ; 
+    var end = start + pageSize -1 ;
+
+
+    var matched = [];
+    if(Order.cache ){
+           for(var id in Order.cache){
+               var order = Order.cache[id];
+               if(order.type != type) continue;
+               //ignore 过期的订单 
+               var orderTime = new Date(order.time);
+               //console.log("the order is : " + JSON.stringify(order));
+               //console.log("the req order is : " + JSON.stringify(reqOrder));
+               if(orderTime.getTime() < (new Date()).getTime()) continue;
+
+               if(order.status && order.status !== 0) continue; //订单已满或者已取消
+
+               matched.push(order);
+               
+           }
+       }
+       if(matched && matched.length > 0){
+           matched.sort(function(o1,o2){
+               var o1OrderTime = (new Date(o1.time)).getTime();
+               var o2OrderTime = (new Date(o2.time)).getTime();
+               return o1OrderTime - o2OrderTime ; 
+           });
+       }
+    this.body =  matched.slice(start,end);
 }
 
 

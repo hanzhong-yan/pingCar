@@ -2,6 +2,7 @@
 var views = require('co-views');
 var parse = require('co-body');
 var Util = require('../util/util');
+var http = require('http');
 var util = require('util');
 var _= require('../util/underscore.js');
 var Order = require('./order.js');
@@ -30,15 +31,21 @@ function ZhaoRen(){
 
 ZhaoRen.prototype.home = function *home(){
     console.log('new pingcar:------------');
+    var openId = this.query.openId || "1234"; 
 
     if(this.query.code){
+
+        //get openId 
+        var userInfo = yield getPageAuthToken(this.query.code);
+        console.log('the userInfo is:%j',userInfo);
+        openId = userInfo.openId;
 
     }else{
 
         var appId = config.appId;
-        var redirectUrl = 'http://'+config.domain+'/pincarweb/pincar.html#menuId=zhaoRen';
+        var redirectUrl = 'http://'+config.domain+'/zhaoRen';
         redirectUrl = encodeURI(redirectUrl);
-        var scope = "snsapi_base";
+        var scope = "snsapi_userinfo";
 
         var authUrl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=%s&state=1#wechat_redirect";
 
@@ -49,13 +56,16 @@ ZhaoRen.prototype.home = function *home(){
     }
 
 
+
+
     var type = 1;
-    var openId = this.query.openId || "1234"; 
     var userId = getUserByOpenId(openId);
     var lastestOrder = Order.getUserLastestOrder(userId,type);
     var qsObj = {};
     qsObj = _.pick(lastestOrder,"userId","type","card","phone","seat","startPoint","destination","detail","time","id");
     
+    var redirectUrl = 'http://'+config.domain+'/pincarweb/pincar.html#menuId=zhaoRen';
+
     if(!_.isEmpty(qsObj)){
         qsObj.time = qsObj.time.replace(' ','T');
         redirectUrl += "#" + queryString.stringify(qsObj,"#");
@@ -64,6 +74,30 @@ ZhaoRen.prototype.home = function *home(){
     }
     this.redirect(redirectUrl);
 };
+
+
+function getPageAuthToken(code){
+   var url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code"; 
+   var promise = new Promise(function(resolve,reject){
+        http.get(url,function(res){
+            var data ;
+            res.on('data', (chunk) => {
+                data += chunk;
+            });
+          res.on('end', () => {
+            data = JSON.parse(data);
+            console.log('No more data in response.');
+            resolve(data);
+          })
+        }).on('error',(e)=>{
+            console.log(`Got error: ${e.message}`);
+            reject(e);
+        });
+        
+  });
+  return promise;
+
+}
 ZhaoRen.prototype.homeZhaoChe = function *homeZhaoChe(){
     //this.redirect('http://120.25.196.109/pincar.html#&menuId=zhaoChe');
     //this.redirect('http://'+config.domain+'/pincarweb/pincar.html#menuId=zhaoChe');

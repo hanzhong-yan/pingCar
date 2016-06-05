@@ -3,6 +3,7 @@ var views = require('co-views');
 var parse = require('co-body');
 var Util = require('../util/util');
 var http = require('http');
+var https = require('https');
 var util = require('util');
 var _= require('../util/underscore.js');
 var Order = require('./order.js');
@@ -37,6 +38,7 @@ ZhaoRen.prototype.home = function *home(){
 
         //get openId 
         var userInfo = yield getPageAuthToken(this.query.code);
+        userInfo = yield getUserInfoOfWeixin(userInfo.access_token,userInfo.openid);
         console.log('the userInfo is:%j',userInfo);
         openId = userInfo.openId;
 
@@ -78,17 +80,19 @@ ZhaoRen.prototype.home = function *home(){
 
 function getPageAuthToken(code){
    var url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code"; 
+   url = util.format(url,config.appId,config.appSecuret,code);
    var promise = new Promise(function(resolve,reject){
-        http.get(url,function(res){
-            var data ;
+        https.get(url,function(res){
+            var data ="";
             res.on('data', (chunk) => {
                 data += chunk;
             });
           res.on('end', () => {
+            console.log("the data is:%s",data);
             data = JSON.parse(data);
             console.log('No more data in response.');
             resolve(data);
-          })
+          });
         }).on('error',(e)=>{
             console.log(`Got error: ${e.message}`);
             reject(e);
@@ -97,6 +101,31 @@ function getPageAuthToken(code){
   });
   return promise;
 
+}
+
+
+function getUserInfoOfWeixin(at,openId){
+    var url = 'https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s&lang=zh_CN';
+    url = util.format(url,at,openId);
+   var promise = new Promise(function(resolve,reject){
+        https.get(url,function(res){
+            var data ="";
+            res.on('data', (chunk) => {
+                data += chunk;
+            });
+          res.on('end', () => {
+            console.log("the data is:%s",data);
+            data = JSON.parse(data);
+            console.log('No more data in response.');
+            resolve(data);
+          });
+        }).on('error',(e)=>{
+            console.log(`Got error: ${e.message}`);
+            reject(e);
+        });
+        
+  });
+  return promise;
 }
 ZhaoRen.prototype.homeZhaoChe = function *homeZhaoChe(){
     //this.redirect('http://120.25.196.109/pincar.html#&menuId=zhaoChe');

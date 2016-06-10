@@ -41,6 +41,7 @@ app.use(route.get('/getAllOrder', zhaoRen.allOrder));
 app.use(route.post('/index', zhaoRen.indexForPost));
 
 app.use(route.post('/getOrderList', order.getOrderList));
+app.use(route.get('/getOrderList', order.getOrderListGet));
 app.use(route.get('/getAllOrderList', order.getAllOrderList));
 //app.use(route.get('/zhaoRen', messages.list));
 /* app.use(route.get('/zhaoRen', function*(){

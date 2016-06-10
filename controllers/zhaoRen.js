@@ -42,7 +42,7 @@ ZhaoRen.prototype.home = function *home(){
         var userInfo = yield getPageAuthToken(this.query.code);
         userInfo = yield getUserInfoOfWeixin(userInfo.access_token,userInfo.openid);
         console.log('the userInfo is:%j',userInfo);
-        openId = userInfo.openId;
+        openId = userInfo.openid;
         nickName = userInfo.nickname;
         User.save(userInfo);
 
@@ -143,7 +143,7 @@ ZhaoRen.prototype.homeZhaoChe = function *homeZhaoChe(){
         var userInfo = yield getPageAuthToken(this.query.code);
         userInfo = yield getUserInfoOfWeixin(userInfo.access_token,userInfo.openid);
         console.log('the userInfo is:%j',userInfo);
-        openId = userInfo.openId;
+        openId = userInfo.openid;
         nickName = userInfo.nickname;
         User.save(userInfo);
 

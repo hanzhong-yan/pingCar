@@ -35,9 +35,14 @@ config.app.init(app);
         },
         {
           "type": "view",
-          "name": "我的",
-          "url": "http://www.52pincar.com/myOrder"
+          "name": "所有信息",
+          "url": "http://www.52pincar.com/getOrderList"
         },
+        // {
+        //   "type": "view",
+        //   "name": "我的",
+        //   "url": "http://www.52pincar.com/myOrder"
+        // },
         // {
         //   "name": "菜单",
         //   "sub_button": [
@@ -83,8 +88,8 @@ nodeWeixinMenu.create(setting,app, menu, function (error, data) {
 // });
 
 // nodeWeixinMenu.remove(setting,app, function (error, data) {
-  // //error === true
-  // //data.errcode
-  // //data.errmsg
-  // console.log("the menu removed success.");
+//   //error === true
+//   //data.errcode
+//   //data.errmsg
+//   console.log("the menu removed success.");
 // });

@@ -7,7 +7,7 @@ User.cache = {};
 module.exports= User;
 
 User.save=function(user){
-	user.cache[user.openid] = user;
+	User.cache[user.openid] = user;
 };
 
 var persisting = 0;//是否真正持久化

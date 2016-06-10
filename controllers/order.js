@@ -4,6 +4,7 @@ var _= require('../util/underscore.js');
 var dateFormat = require('dateformat');
 var fs = require("fs");
 var parse = require('co-body');
+var config = require('../app.js').config;
 //order sample
 /* var orderSample = {
     id : 201603172010501231 ,
@@ -198,17 +199,25 @@ Order.getAllOrderList = function*(){
   this.body = Order.cache;
 }
 
-Order.getOrderList = function*(type,pageNo){
+Order.getOrderListGet = function*(){
+  var orderListUrl = 'http://'+config.domain+'/pincarweb/html/pincar.html';
+      this.redirect(orderListUrl);
+      return;
+}
+
+Order.getOrderList = function*(){
     var body = yield parse(this);
-    var pageSize = 10 ; 
-    type = body.type | 0;
-    pageNo = body.pageNo | 0;
+    var pageSize = 1 ; 
+    var type = body.type || 0;
+    var pageNo = body.pageNo || 0;
     var start = pageNo * pageSize ; 
-    var end = start + pageSize -1 ;
+    var end = start + pageSize  ;
+
+    
 
 
     var matched = [];
-    if(Order.cache ){
+    if(Order.cache ){ 
            for(var id in Order.cache){
                var order = Order.cache[id];
                if(order.type != type) continue;
@@ -231,7 +240,14 @@ Order.getOrderList = function*(type,pageNo){
                return o1OrderTime - o2OrderTime ; 
            });
        }
-    this.body =  matched.slice(start,end);
+       var result = {
+          more : 0 ,
+          list : []
+       };
+       result.more = matched.length-1  >= end ? 1 : 0;
+       result.list = matched.slice(start,end);
+       result.count = matched.length;
+    this.body =  result;
 }
 
 

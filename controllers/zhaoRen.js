@@ -63,10 +63,10 @@ ZhaoRen.prototype.home = function *home(){
 
 
 
-
+    ;;
     var type = 1;
     var userId = getUserByOpenId(openId);
-    var lastestOrder = Order.getUserLastestOrder(userId,type);
+    
     var qsObj = {};
     qsObj = _.pick(lastestOrder,"userId","nickName","type","card","phone","seat","startPoint","destination","detail","time","id");
     
@@ -78,6 +78,7 @@ ZhaoRen.prototype.home = function *home(){
     }else{
         redirectUrl += "#" + "userId=" + openId+ "#nickName=" + nickName;
     }
+    redirectUrl = encodeURI(redirectUrl);
     this.redirect(redirectUrl);
 };
 
@@ -176,6 +177,7 @@ ZhaoRen.prototype.homeZhaoChe = function *homeZhaoChe(){
     }else{
         redirectUrl += "#" + "userId=" + openId + "#nickName=" + nickName;
     }
+    redirectUrl = encodeURI(redirectUrl);
     this.redirect(redirectUrl);
 
 
